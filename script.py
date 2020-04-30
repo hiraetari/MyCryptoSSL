@@ -24,12 +24,11 @@ def getHash(fname):
 def fileSign():
     keyName = input("Please, input keyname: ")
     privKeyFile = open('keys/' + keyName + '.key','rb')
-    key = RSA.generate(1024, os.urandom)
-    privKeyFile.read(key.importKey())
+    key = RSA.importKey(privKeyFile.read())
     fileName = input("Please, input filename: ")
     signature = pkcs1_15.new(key).sign(getHash(fileName))
-    sigFile= open('signs/' + time.asctime() +'.sign','wb')
-    privKeyFile.write(signature)
+    sigFile= open('signs/' + str(time.time()) +'.sign','wb')
+    sigFile.write(signature)
     privKeyFile.close()
     sigFile.close()
 
@@ -41,8 +40,7 @@ while command != "exit":
             generateKeypair()
             continue
         elif command == "sign":
-            print("check")
-            continue
+            fileSign()
         elif command == "verify":
             print("check")
             continue
