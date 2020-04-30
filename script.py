@@ -2,9 +2,9 @@ from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pkcs1_15
 import os
+import time
 
-
-def generate_keypair():
+def generateKeypair():
     keyname = input("Please, input keyname: ")
     privKeyFile = open('keys/' + keyname + '.key','wb')
     pubKeyFile = open('keys/' + keyname + '.crt','wb')
@@ -14,13 +14,31 @@ def generate_keypair():
     privKeyFile.close()
     pubKeyFile.close()
 
+def getHash(fname):
+    hash = SHA256.new()
+    with open(fname, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash.update(chunk)
+    return hash
+
+def fileSign():
+    keyName = input("Please, input keyname: ")
+    privKeyFile = open('keys/' + keyName + '.key','rb')
+    key = RSA.generate(1024, os.urandom)
+    privKeyFile.read(key.importKey())
+    fileName = input("Please, input filename: ")
+    signature = pkcs1_15.new(key).sign(getHash(fileName))
+    sigFile= open('signs/' + time.asctime() +'.sign','wb')
+    privKeyFile.write(signature)
+    privKeyFile.close()
+    sigFile.close()
 
 command ="";
 while command != "exit":
     try:
         command = input("Please, enter command: \n")
         if  command == "keygen":
-            generate_keypair()
+            generateKeypair()
             continue
         elif command == "sign":
             print("check")
@@ -33,11 +51,11 @@ while command != "exit":
             continue
         elif command == "help":
             print("Commands list:\n"
-            "keygen -"
-            "sign - "
-            "verify -"
-            "sh_keychain -"
-            "help -")
+            "keygen - generate new keypair\n"
+            "sign - sign a file\n"
+            "verify - verify file\n"
+            "sh_keychain - show existing keypairs\n"
+            "help - show this list\n")
             continue
         elif command == "exit":
             print("See you next time!")
