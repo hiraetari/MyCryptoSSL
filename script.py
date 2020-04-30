@@ -5,9 +5,9 @@ import os
 import time
 
 def generateKeypair():
-    keyname = input("Please, input keyname: ")
-    privKeyFile = open('keys/' + keyname + '.key','wb')
-    pubKeyFile = open('keys/' + keyname + '.crt','wb')
+    keyPairName = input("Please, input keypair name: ")
+    privKeyFile = open('keys/' + keyPairName + '.key','wb')
+    pubKeyFile = open('keys/' + keyPairName + '.crt','wb')
     key = RSA.generate(1024, os.urandom)
     privKeyFile.write(key.exportKey())
     pubKeyFile.write(key.publickey().exportKey())
@@ -22,15 +22,26 @@ def getHash(fname):
     return hash
 
 def fileSign():
-    keyName = input("Please, input keyname: ")
+    keyName = input("Please, input keypair name: ")
     privKeyFile = open('keys/' + keyName + '.key','rb')
     key = RSA.importKey(privKeyFile.read())
-    fileName = input("Please, input filename: ")
+    fileName = input("Please, input file name: ")
     signature = pkcs1_15.new(key).sign(getHash(fileName))
-    sigFile= open('signs/' + str(time.time()) +'.sign','wb')
+    sigFile = open('signs/' + str(time.time()) +'.sign','wb')
     sigFile.write(signature)
     privKeyFile.close()
     sigFile.close()
+
+def verify():
+    keyPairName = input("Please, input keypair name: ")
+    pubKeyFile = open('keys/' + keyPairName + '.crt','rb')
+    signName = input("Please, input sign name: ")
+    sigFile = open('signs/' + signName +'.sign','rb')
+    fileName = input("Please, input file name: ")
+
+    pubkey = RSA.importKey(pubKeyFile.read())
+    pkcs1_15.new(pubkey).verify(getHash(fileName), sigFile.read())
+    print(pkcs1_15.new(pubkey).verify(getHash(fileName), sigFile.read()))
 
 command ="";
 while command != "exit":
@@ -42,7 +53,7 @@ while command != "exit":
         elif command == "sign":
             fileSign()
         elif command == "verify":
-            print("check")
+            verify()
             continue
         elif command == "sh_keychain":
             print("check")
