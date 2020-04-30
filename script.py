@@ -6,10 +6,13 @@ import os
 
 def generate_keypair():
     keyname = input("Please, input keyname: ")
-    keyfile = open('keys/' + keyname + '.key','wb')
+    privKeyFile = open('keys/' + keyname + '.key','wb')
+    pubKeyFile = open('keys/' + keyname + '.crt','wb')
     key = RSA.generate(1024, os.urandom)
-    keyfile.write(key.exportKey())
-    keyfile.close()
+    privKeyFile.write(key.exportKey())
+    pubKeyFile.write(key.publickey().exportKey())
+    privKeyFile.close()
+    pubKeyFile.close()
 
 
 command ="";
