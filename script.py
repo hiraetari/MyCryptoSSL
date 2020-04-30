@@ -42,6 +42,8 @@ def verify():
     pubkey = RSA.importKey(pubKeyFile.read())
     pkcs1_15.new(pubkey).verify(getHash(fileName), sigFile.read())
     print(pkcs1_15.new(pubkey).verify(getHash(fileName), sigFile.read()))
+    pubKeyFile.close()
+    sigFile.close()
 
 command ="";
 while command != "exit":
