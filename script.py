@@ -40,8 +40,11 @@ def verify():
     fileName = input("Please, input file name: ")
 
     pubkey = RSA.importKey(pubKeyFile.read())
-    pkcs1_15.new(pubkey).verify(getHash(fileName), sigFile.read())
-    print(pkcs1_15.new(pubkey).verify(getHash(fileName), sigFile.read()))
+    try:
+        pkcs1_15.new(pubkey).verify(getHash(fileName), sigFile.read())
+        print("The signature is valid.")
+    except:
+        print("The signature is not valid.")        
     pubKeyFile.close()
     sigFile.close()
 
