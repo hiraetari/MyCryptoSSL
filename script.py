@@ -33,12 +33,13 @@ def fileSign():
     signature = pkcs1_15.new(key).sign(getHash(fileName))
     sigFile = open('signs/' + str(time.time()) +'.sign','wb')
     sigFile.write(signature)
+    signatstr = str(signature)
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_H,
         box_size=10,
         border=4, )
-    qr.add_data(fileName + ' ' + signature)
+    qr.add_data(fileName + ' ' + signatstr)
     qr.make(fit=True)
     img = qr.make_image()
     img.save('QRcodes/' + str(time.time()) + '.png')
