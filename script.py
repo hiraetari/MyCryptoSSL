@@ -38,12 +38,10 @@ def fileSign():
         error_correction=qrcode.constants.ERROR_CORRECT_H,
         box_size=10,
         border=4, )
-    qr.add_data(signature + ' ' + fileName)
+    qr.add_data(fileName + ' ' + signature)
     qr.make(fit=True)
     img = qr.make_image()
     img.save('QRcodes/' + str(time.time()) + '.png')
-    privKeyFile.close()
-    sigFile.close()
     privKeyFile.close()
     sigFile.close()
 
