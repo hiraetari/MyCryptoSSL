@@ -3,6 +3,8 @@ from Crypto.PublicKey import RSA
 from Crypto.Signature import pkcs1_15
 import os
 import time
+import qrcode
+
 
 def generateKeypair():
     keyPairName = input("Please, input keypair name: ")
@@ -14,12 +16,14 @@ def generateKeypair():
     privKeyFile.close()
     pubKeyFile.close()
 
+
 def getHash(fname):
     hash = SHA256.new()
     with open(fname, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
             hash.update(chunk)
     return hash
+
 
 def fileSign():
     keyName = input("Please, input keypair name: ")
@@ -29,8 +33,20 @@ def fileSign():
     signature = pkcs1_15.new(key).sign(getHash(fileName))
     sigFile = open('signs/' + str(time.time()) +'.sign','wb')
     sigFile.write(signature)
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_H,
+        box_size=10,
+        border=4, )
+    qr.add_data(signature + ' ' + fileName)
+    qr.make(fit=True)
+    img = qr.make_image()
+    img.save('QRcodes/' + str(time.time()) + '.png')
     privKeyFile.close()
     sigFile.close()
+    privKeyFile.close()
+    sigFile.close()
+
 
 def verify():
     keyPairName = input("Please, input keypair name: ")
@@ -44,7 +60,7 @@ def verify():
         pkcs1_15.new(pubkey).verify(getHash(fileName), sigFile.read())
         print("The signature is valid.")
     except:
-        print("The signature is not valid.")        
+        print("The signature is not valid.")
     pubKeyFile.close()
     sigFile.close()
 
